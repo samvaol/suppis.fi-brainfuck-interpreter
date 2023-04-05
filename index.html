@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brainfuck Interpreter</title>
+    <script>
+        function interpretBrainfuck(code, input) {
+            let data = new Uint8Array(30000);
+            let dataPtr = 0;
+            let inputPtr = 0;
+            let output = "";
+
+            for (let i = 0; i < code.length; i++) {
+                let c = code.charAt(i);
+                switch (c) {
+                    case '>':
+                        dataPtr++;
+                        break;
+                    case '<':
+                        dataPtr--;
+                        break;
+                    case '+':
+                        data[dataPtr]++;
+                        break;
+                    case '-':
+                        data[dataPtr]--;
+                        break;
+                    case '.':
+                        output += String.fromCharCode(data[dataPtr]);
+                        break;
+                    case ',':
+                        data[dataPtr] = input.charCodeAt(inputPtr++);
+                        break;
+                    case '[':
+                        if (data[dataPtr] === 0) {
+                            let bracketCount = 1;
+                            while (bracketCount > 0) {
+                                i++;
+                                if (code.charAt(i) === '[') {
+                                    bracketCount++;
+                                } else if (code.charAt(i) === ']') {
+                                    bracketCount--;
+                                }
+                            }
+                        }
+                        break;
+                    case ']':
+                        if (data[dataPtr] !== 0) {
+                            let bracketCount = 1;
+                            while (bracketCount > 0) {
+                                i--;
+                                if (code.charAt(i) === ']') {
+                                    bracketCount++;
+                                } else if (code.charAt(i) === '[') {
+                                    bracketCount--;
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            return output;
+        }
+
+        function updateOutput() {
+            const code = document.getElementById("inputCode").value;
+            const output = interpretBrainfuck(code, "");
+            document.getElementById("output").innerText = output;
+        }
+    </script>
+</head>
+<body>
+    <h1 style="text-align: center; padding-top: 4%; padding-bottom: 0.1%;">Brainfuck Interpreter</h1>
+    <textarea id="inputCode" oninput="updateOutput()" rows="10" cols="50" placeholder="Enter Brainfuck code here"></textarea>
+    <h1 style="color: var(--mansikanpunainen); text-align: center; padding-top: 2%; padding-bottom: 0.1%;">Output:</h1>
+    <textarea id="output" rows="10" cols="50" readonly></textarea>
+</body>
+<link rel="stylesheet" href="./webteema.css">
+<link rel="stylesheet" href="./nummarit.css">
+</html>
